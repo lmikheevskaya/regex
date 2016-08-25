@@ -15,26 +15,22 @@ const SIZE sz_edit = {300, 40};
 
 WindowsTest::WindowsTest() : m_thread(threadTestWindow, this)
 {
-	// Загружаем библиотеку RICHED32.DLL
+	// Р—Р°РіСЂСѓР¶Р°РµРј Р±РёР±Р»РёРѕС‚РµРєСѓ RICHED32.DLL
 	hRTFLib = LoadLibraryA("RICHED32.DLL");
 }
 
 void WindowsTest::WriteMessage(const char* msg)
 {
-		WindowsTest window;
-		::Sleep(100);
-		//int err = window.CreateWin();
-		while (true)
-		{
-			if(window.m_thread.joinable()){
-		//		//поиск и обработка тегов, запись сообщения
-				window.SearchTag(msg);
-				break;
-			}
+	WindowsTest window;
+	::Sleep(100);
+	while (true)
+	{
+		if(window.m_thread.joinable()){
+			//РїРѕРёСЃРє Рё РѕР±СЂР°Р±РѕС‚РєР° С‚РµРіРѕРІ, Р·Р°РїРёСЃСЊ СЃРѕРѕР±С‰РµРЅРёСЏ
+			window.SearchTag(msg);
+			break;
 		}
-
-
-		//ShowWindow(window.m_hWndWin, SW_SHOW);
+	}
 	UpdateWindow(window.m_hWndWin);
 
 }
@@ -54,7 +50,6 @@ int WindowsTest::loop()
 		if (bRet == -1)
 		{
 			int err = GetLastError();
-			//ERROR_LOG_STR("ParentWindow(popup)", "Error in GetMessage! ", std::to_string((long long)err));
 		}
 		else
 		{
@@ -72,7 +67,6 @@ int WindowsTest::threadTestWindow(LPVOID pData)
 	
 	int err = ppwin->CreateWin();
 	if(err) {
-		//ERROR_LOG_STR("ParentWindow(popup)", "Error in CreateWin(thread)! ", std::to_string((long long)err));
 		return 0;
 	}
 	ppwin->loop(); 
@@ -101,7 +95,7 @@ int CALLBACK WindowsTest::DlgFunc(HWND DlgWin, UINT msg, WPARAM wp, LPARAM lp)
 		case WM_NOTIFY:
 			switch (((LPNMHDR)lp)->code)                             
 			{
-				//обработка нажатия на ссылку
+				//РѕР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёСЏ РЅР° СЃСЃС‹Р»РєСѓ
 				case EN_LINK:
 					enLinkInfo = (ENLINK *)lp;
 
@@ -119,18 +113,17 @@ int CALLBACK WindowsTest::DlgFunc(HWND DlgWin, UINT msg, WPARAM wp, LPARAM lp)
 						::ShellExecuteA(NULL, "open", temp2, NULL, NULL, SW_SHOWDEFAULT);
 					}
 					break;
-				// высота текста привышает высоту edit
+				// РІС‹СЃРѕС‚Р° С‚РµРєСЃС‚Р° РїСЂРёРІС‹С€Р°РµС‚ РІС‹СЃРѕС‚Сѓ edit
 				case EN_REQUESTRESIZE:
 					pReqResize = (REQRESIZE *) lp;
-					//изменить размеры окна, в соответствии с необходимым значением edit
+					//РёР·РјРµРЅРёС‚СЊ СЂР°Р·РјРµСЂС‹ РѕРєРЅР°, РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РЅРµРѕР±С…РѕРґРёРјС‹Рј Р·РЅР°С‡РµРЅРёРµРј edit
 					break;
 			}
 			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
-		default:  
-			// все сообщения не обработанные Вами обработает сама Windows
+		default: 
 			return DefWindowProc(DlgWin, msg, wp, lp);
 	}
 
@@ -139,8 +132,6 @@ int CALLBACK WindowsTest::DlgFunc(HWND DlgWin, UINT msg, WPARAM wp, LPARAM lp)
 
 int WindowsTest::CreateWin()
 {
-	//BITMAP  bitmap;
-
 	HINSTANCE m_hInst(nullptr);
 	RegClassWindow(m_hInst);
 
@@ -148,10 +139,9 @@ int WindowsTest::CreateWin()
 								position.x, position.y, sz_win.cx, sz_win.cy, 
 								NULL, NULL, m_hInst, NULL);
 
-	//сообщение с указателем на класс
+	//СЃРѕРѕР±С‰РµРЅРёРµ СЃ СѓРєР°Р·Р°С‚РµР»РµРј РЅР° РєР»Р°СЃСЃ
 	::SetWindowLongPtr(m_hWndWin, GWL_USERDATA,(LONG_PTR)this);
 
-	//создаем орган управления
 	m_edit = CreateWindowA("RICHEDIT", "", WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_READONLY , 10, 10, 
 								sz_edit.cx , sz_edit.cy, 
 								m_hWndWin, NULL , m_hInst, NULL);	
@@ -160,7 +150,7 @@ int WindowsTest::CreateWin()
 		return -1;
 
 
-	//делаем окно прозрачным
+	//РґРµР»Р°РµРј РѕРєРЅРѕ РїСЂРѕР·СЂР°С‡РЅС‹Рј
 	SetWindowLongPtr(m_hWndWin, GWL_EXSTYLE, GetWindowLongPtr(m_hWndWin, GWL_EXSTYLE) | WS_EX_LAYERED);
 	SetLayeredWindowAttributes (m_hWndWin, 0, (255*90)/100, LWA_ALPHA);
 
@@ -171,20 +161,17 @@ int WindowsTest::CreateWin()
 
 int WindowsTest::RegClassWindow(HINSTANCE hIn)
 {                                        
-	//* заполнение класса окна /
-	WNDCLASS wc = {0};   // струтура класса окна
+	WNDCLASS wc = {0};   
+	wc.style	 = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc	 = (WNDPROC)DlgFunc;
+	wc.cbClsExtra	 = 0;
+	wc.cbWndExtra	 = 0;
+	wc.hInstance	 = hIn;
+	wc.hIcon         = LoadIcon(hIn, IDI_APPLICATION);
 
-	// заполнение структуры WNDCLASSEX
-	wc.style			 = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc		 = (WNDPROC)DlgFunc;
-	wc.cbClsExtra		 = 0;
-	wc.cbWndExtra	     = 0;
-	wc.hInstance	     = hIn;
-	wc.hIcon             = LoadIcon(hIn, IDI_APPLICATION);
-	// стандартного курсора
-	wc.hCursor			 = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground	 = (HBRUSH) GetStockObject(WHITE_BRUSH);
-	wc.lpszClassName	 = TEXT("Test");
+	wc.hCursor	 = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+	wc.lpszClassName = TEXT("Test");
 
 	RegisterClass(&wc);
 	return 0;
@@ -196,7 +183,7 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 	ZeroMemory(&cf, sizeof(cf));
 	cf.cbSize  = sizeof(CHARFORMAT);
 
-	if (tag == "u")// подчеркнутый текст
+	if (tag == "u")// РїРѕРґС‡РµСЂРєРЅСѓС‚С‹Р№ С‚РµРєСЃС‚
 	{
 		cf.dwMask       |= CFE_UNDERLINE;
 		cf.dwEffects     = CFE_UNDERLINE;
@@ -207,7 +194,7 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 		cf.dwEffects     = ~DWORD(CFE_UNDERLINE);
 		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
 	}
-	else if(tag == "strong") //Наклонный текст
+	else if(tag == "strong") //РќР°РєР»РѕРЅРЅС‹Р№ С‚РµРєСЃС‚
 	{
 		cf.dwMask       |= CFE_ITALIC;
 		cf.dwEffects     = CFE_ITALIC;
@@ -218,7 +205,7 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 		cf.dwEffects     = ~DWORD(CFE_ITALIC);
 		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
 	}
-	else if(tag == "a") //ссылка
+	else if(tag == "a")  //СЃСЃС‹Р»РєР°
 	{
 		cf.dwMask        = CFE_LINK;
 		cf.dwEffects     = CFE_LINK;
@@ -232,7 +219,7 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 		cf.dwEffects     = ~DWORD(CFE_LINK);
 		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
 	}
-	else if(tag == "h1") //высота шрифта
+	else if(tag == "h1") //РІС‹СЃРѕС‚Р° С€СЂРёС„С‚Р°
 	{
 		cf.dwMask        = CFM_SIZE;
 		cf.yHeight		 = 738;
@@ -264,7 +251,7 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 		cf.yHeight       = 100;
 		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
 	}
-	else if(tag == "h4") //стандартный шрифт
+	else if(tag == "h4") //СЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ С€СЂРёС„С‚
 	{
 		cf.dwMask        = CFM_SIZE;
 		cf.yHeight		 = 100;
@@ -272,21 +259,11 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
 		SearchTag(text.c_str());
 	}
-	else if(tag == "br")	//перевод строки
+	else if(tag == "br")	//РїРµСЂРµРІРѕРґ СЃС‚СЂРѕРєРё
 	{
 		SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)"\n"); 
 		SearchTag(text.c_str());
 	}
-	/*else if(tag == "color") // красный цвет
-	{
-		cf.dwMask        = CFM_COLOR;
-		cf.crTextColor   = RGB(0xFF, 0x00, 0x00);
-		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
-		SearchTag(text.c_str());
-
-		cf.crTextColor   = RGB(0, 0, 0) ;
-		SendMessageA(m_edit, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM) & cf);
-	}*/
 	else 
 		SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)text.c_str()); 
 }
@@ -296,42 +273,30 @@ WindowsTest::~WindowsTest()
 	close();
 }
 
-/*void WindowsTest::WriteMessage(const char* p_message)
-{
-	WindowsTest window;
-	int err = window.CreateWin();
-
-	//поиск и обработка тегов, запись сообщения
-	window.SearchTag(p_message);
-
-	ShowWindow(window.m_hWndWin, SW_SHOW);
-	UpdateWindow(window.m_hWndWin);
-}*/
-
-//обработка сообщения. поиск тегов
+//РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёСЏ. РїРѕРёСЃРє С‚РµРіРѕРІ
 /*
-Поиск тегов с помощью регулярных выражений. Имеется три типа тегов : обычный парный тег,
-непарный тег, одиночный тег
-1) Обрабатываем текст до тега.
-2) как только встречаем '<', начинает считавть тег
-	если новый '<' появился раньше, чем '>', значит это был не тег, записываем весь екст в окно 
-	и обрабатьваем новый тег
-	если '>' не появилось до окончания строки, то записываем весть текст
-	если нашли закрывающий '>', то текст между '<' и '>', считается тегом
-3) Если тег не парвый, то определяем его первую часть, ту, которая совпадает с закрывающим тегом
-4) Определяем тип тега 
-5) Находим текст, который надо обработать
-6) Обрабатываем его
-7) Проврка на изменение высоты edit
-8) 1. пункт, пока не кончится строка
+РџРѕРёСЃРє С‚РµРіРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ СЂРµРіСѓР»СЏСЂРЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№. РРјРµРµС‚СЃСЏ С‚СЂРё С‚РёРїР° С‚РµРіРѕРІ : РѕР±С‹С‡РЅС‹Р№ РїР°СЂРЅС‹Р№ С‚РµРі,
+РЅРµРїР°СЂРЅС‹Р№ С‚РµРі, РѕРґРёРЅРѕС‡РЅС‹Р№ С‚РµРі
+1) РћР±СЂР°Р±Р°С‚С‹РІР°РµРј С‚РµРєСЃС‚ РґРѕ С‚РµРіР°.
+2) РєР°Рє С‚РѕР»СЊРєРѕ РІСЃС‚СЂРµС‡Р°РµРј '<', РЅР°С‡РёРЅР°РµС‚ СЃС‡РёС‚Р°РІС‚СЊ С‚РµРі
+	РµСЃР»Рё РЅРѕРІС‹Р№ '<' РїРѕСЏРІРёР»СЃСЏ СЂР°РЅСЊС€Рµ, С‡РµРј '>', Р·РЅР°С‡РёС‚ СЌС‚Рѕ Р±С‹Р» РЅРµ С‚РµРі, Р·Р°РїРёСЃС‹РІР°РµРј РІРµСЃСЊ РµРєСЃС‚ РІ РѕРєРЅРѕ 
+	Рё РѕР±СЂР°Р±Р°С‚СЊРІР°РµРј РЅРѕРІС‹Р№ С‚РµРі
+	РµСЃР»Рё '>' РЅРµ РїРѕСЏРІРёР»РѕСЃСЊ РґРѕ РѕРєРѕРЅС‡Р°РЅРёСЏ СЃС‚СЂРѕРєРё, С‚Рѕ Р·Р°РїРёСЃС‹РІР°РµРј РІРµСЃС‚СЊ С‚РµРєСЃС‚
+	РµСЃР»Рё РЅР°С€Р»Рё Р·Р°РєСЂС‹РІР°СЋС‰РёР№ '>', С‚Рѕ С‚РµРєСЃС‚ РјРµР¶РґСѓ '<' Рё '>', СЃС‡РёС‚Р°РµС‚СЃСЏ С‚РµРіРѕРј
+3) Р•СЃР»Рё С‚РµРі РЅРµ РїР°СЂРІС‹Р№, С‚Рѕ РѕРїСЂРµРґРµР»СЏРµРј РµРіРѕ РїРµСЂРІСѓСЋ С‡Р°СЃС‚СЊ, С‚Сѓ, РєРѕС‚РѕСЂР°СЏ СЃРѕРІРїР°РґР°РµС‚ СЃ Р·Р°РєСЂС‹РІР°СЋС‰РёРј С‚РµРіРѕРј
+4) РћРїСЂРµРґРµР»СЏРµРј С‚РёРї С‚РµРіР° 
+5) РќР°С…РѕРґРёРј С‚РµРєСЃС‚, РєРѕС‚РѕСЂС‹Р№ РЅР°РґРѕ РѕР±СЂР°Р±РѕС‚Р°С‚СЊ
+6) РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РµРіРѕ
+7) РџСЂРѕРІСЂРєР° РЅР° РёР·РјРµРЅРµРЅРёРµ РІС‹СЃРѕС‚С‹ edit
+8) 1. РїСѓРЅРєС‚, РїРѕРєР° РЅРµ РєРѕРЅС‡РёС‚СЃСЏ СЃС‚СЂРѕРєР°
 */
 void WindowsTest::SearchTag(const char *p_message)
 {
 	std::string text;
 	std::string text_link;
-	std::string tag;               // обычный тег
-	std::string tag_cl;            // первая часть непарного тега
-	std::string page = p_message;  // строка
+	std::string tag;               // РѕР±С‹С‡РЅС‹Р№ С‚РµРі
+	std::string tag_cl;            // РїРµСЂРІР°СЏ С‡Р°СЃС‚СЊ РЅРµРїР°СЂРЅРѕРіРѕ С‚РµРіР° 
+	std::string page = p_message;  // СЃС‚СЂРѕРєР°
 
 	std::string closing;
 	bool boolalpha = false;
@@ -341,18 +306,15 @@ void WindowsTest::SearchTag(const char *p_message)
 		if(page[i] == '<')
 		{
 			++i;
-			//записываем текст, который есть
+			//Р·Р°РїРёСЃС‹РІР°РµРј С‚РµРєСЃС‚, РєРѕС‚РѕСЂС‹Р№ РµСЃС‚СЊ
 			SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)text.c_str()); 
-			//очищаем текущий текст
 			text.clear();
 
-			//определяем тег
 			while(page[i] != '>')
 			{
 				if (page[i] == '<')
 				{
 					tag = '<' + tag;
-					//записываем текст, который есть
 					SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)tag.c_str()); 
 					tag.clear();
 					--i;
@@ -364,13 +326,12 @@ void WindowsTest::SearchTag(const char *p_message)
 				else
 				{
 					tag = '<' + tag;
-					//записываем текст, который есть
+					//Г§Г ГЇГЁГ±Г»ГўГ ГҐГ¬ ГІГҐГЄГ±ГІ, ГЄГ®ГІГ®Г°Г»Г© ГҐГ±ГІГј
 					SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)tag.c_str()); 
 					tag.clear();
 					break;
 				}
 			}
-			// находим первую часть непарного тега
 			for (auto ii = tag.begin(); ii != tag.end(); ++ii)
 			{
 				if (*ii == ' ')
@@ -378,19 +339,19 @@ void WindowsTest::SearchTag(const char *p_message)
 				tag_cl += *ii;
 			}
 
-			//варианты возможных типов тегов
-			std::regex regex1("<" + tag + ">(.*?)</" + tag + ">");              // обычный парный текст
-			std::regex regex2("<" + tag_cl + "(.*?)>(.*?)</" + tag_cl + ">");   // непарный  тег
-//			std::regex regex3("<" + tag + ">(.*?)");						    // одиночный тег
+			// РЅР°С…РѕРґРёРј РїРµСЂРІСѓСЋ С‡Р°СЃС‚СЊ РЅРµРїР°СЂРЅРѕРіРѕ С‚РµРіР°
+			std::regex regex1("<" + tag + ">(.*?)</" + tag + ">");              // РѕР±С‹С‡РЅС‹Р№ РїР°СЂРЅС‹Р№ С‚РµРєСЃС‚
+			std::regex regex2("<" + tag_cl + "(.*?)>(.*?)</" + tag_cl + ">");   // РЅРµРїР°СЂРЅС‹Р№  С‚РµРі
+//			std::regex regex3("<" + tag + ">(.*?)");			    // РѕРґРёРЅРѕС‡РЅС‹Р№ С‚РµРі
 
 			if(std::regex_search(page, regex1))
 				closing = "</" + tag + ">";
 			else if(std::regex_search(page, regex2))
 			{
-				std::regex link("a href=(.*?)");								  // регулярное выражение тега ссылки
+				std::regex link("a href=(.*?)");			    // СЂРµРіСѓР»СЏСЂРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ С‚РµРіР° СЃСЃС‹Р»РєРё
 				std::smatch xResults;
 				boolalpha = std::regex_match(tag, xResults, link); 
-				text_link = xResults[1];								          // находим адрес
+				text_link = xResults[1];				    // РЅР°С…РѕРґРёРј Р°РґСЂРµСЃ
 				closing = "</" + tag_cl + ">";
 			}
 			else
@@ -403,13 +364,13 @@ void WindowsTest::SearchTag(const char *p_message)
 			for (std::sregex_iterator it(page.cbegin(), page.cend(), regex); it != std::sregex_iterator(); ++it) 
 			{
 				int position = i - tag.length() - 1;
-				if (it->position() == position) // проверяем, чтобы обрабатывался только текущий тег
+				if (it->position() == position) // РїСЂРѕРІРµСЂСЏРµРј, С‡С‚РѕР±С‹ РѕР±СЂР°Р±Р°С‚С‹РІР°Р»СЃСЏ С‚РѕР»СЊРєРѕ С‚РµРєСѓС‰РёР№ С‚РµРі
 					text += (*it)[1];
 			}
-			// позиция последнего символа закрывающего тега
+			// РїРѕР·РёС†РёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРёРјРІРѕР»Р° Р·Р°РєСЂС‹РІР°СЋС‰РµРіРѕ С‚РµРіР°
 			i = i + text.length() + closing.length();			
 
-			if (boolalpha) // если непарный тег - ссылка, то tag = "a", в остальных случаях оставляем как есть
+			if (boolalpha) //  РµСЃР»Рё РЅРµРїР°СЂРЅС‹Р№ С‚РµРі - СЃСЃС‹Р»РєР°, С‚Рѕ tag = "a", РІ РѕСЃС‚Р°Р»СЊРЅС‹С… СЃР»СѓС‡Р°СЏС… РѕСЃС‚Р°РІР»СЏРµРј РєР°Рє РµСЃС‚СЊ
 			{
 				tag       = "a";
 				deq_link_mes[text] = text_link;
@@ -424,8 +385,8 @@ void WindowsTest::SearchTag(const char *p_message)
 		else
 			text += page[i];
 	
-		//оценка необходимой высоты окна
-		//срабатывает, если размер edit изменился
+		//РѕС†РµРЅРєР° РЅРµРѕР±С…РѕРґРёРјРѕР№ РІС‹СЃРѕС‚С‹ РѕРєРЅР°
+		//СЃСЂР°Р±Р°С‚С‹РІР°РµС‚, РµСЃР»Рё СЂР°Р·РјРµСЂ edit РёР·РјРµРЅРёР»СЃСЏ
 		LRESULT mask = SendMessageA(m_edit, EM_GETEVENTMASK, 0, 0); //hWndText is rich edit control
 		SendMessageA(m_edit, EM_SETEVENTMASK, 0, mask | ENM_REQUESTRESIZE);
 	}
