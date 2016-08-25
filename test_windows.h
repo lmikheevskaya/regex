@@ -14,38 +14,20 @@ public:
 	static void WriteMessage(const char* msg);
 	static int CALLBACK WindowsTest::DlgFunc(HWND DlgWin, UINT msg, WPARAM wp, LPARAM lp);		  
 	static int threadTestWindow(LPVOID);
-	// запись сообщения
-	//void SmoothlyShowWindow();		// функция обеспечивающая плавное появление окна
-	//void CreateRegion();			// создание региона для окна 
-	//void CulculHeightWin(int);		// расчет высоты окна
-	//void EventOnPaint(HWND);		// отрисовка окна
-	//BOOL IncludedInRegion(POINT);	// отпределяет попадает ли точка в регион
-
-public:
-		
-	//int m_height;	// высота окна
-	//SIZE m_sz_edit;
-	//SIZE m_sz_win;
-	//POINT m_position;
-	//int	m_pos_y_finish;	// конечная позиция по у
-	//HWND  m_ParWin;		// дeскриптор родительского окна
-	//POINT m_pos_image_but_close;// координата кнопки "закрыть" относительно bitmap
-	//POINT m_pos_but_close;		// координата кнопки "закрыть" относительно экранных координат
-	//HINSTANCE m_hInst;			// дескриптор приложения   
 
 private:
-	void					SearchTag(const char*);				 // обработка текста сообщения, поиск тегов
-	void					ProcessTag(std::string, std::string);// обработка тега
-	int					    CreateWin();						 // создание окна
-	int						RegClassWindow(HINSTANCE hIn);
-	int		loop();
-	void	close();
+	void SearchTag(const char*); // РѕР±СЂР°Р±РѕС‚РєР° С‚РµРєСЃС‚Р° СЃРѕРѕР±С‰РµРЅРёСЏ, РїРѕРёСЃРє С‚РµРіРѕРІ
+	void ProcessTag(std::string, std::string);// РѕР±СЂР°Р±РѕС‚РєР° С‚РµРіР°
+	int CreateWin();				
+	int RegClassWindow(HINSTANCE hIn);
+	int loop();
+	void close();
 
 private:
-	HWND					m_edit;				// дискриптор edit	
-	HRGN					m_hRgn;  			// хэндл региона определяющего форму окна
-	HWND					m_hWndWin;	        // дискриптор окна
-	std::thread				m_thread;
+	HWND m_edit;	
+	HRGN m_hRgn;  // С…СЌРЅРґР» СЂРµРіРёРѕРЅР° РѕРїСЂРµРґРµР»СЏСЋС‰РµРіРѕ С„РѕСЂРјСѓ РѕРєРЅР°
+	HWND m_hWndWin;	    
+	std::thread m_thread;
 	HINSTANCE hRTFLib;
 };
 
