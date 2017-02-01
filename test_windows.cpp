@@ -19,6 +19,14 @@ WindowsTest::WindowsTest() : m_thread(threadTestWindow, this)
 	hRTFLib = LoadLibraryA("RICHED32.DLL");
 }
 
+WindowsTest::~WindowsTest()
+{
+	close();
+	
+	if(hRTFLib)
+		FreeLibrary(hRTFLib);
+}
+
 void WindowsTest::WriteMessage(const char* msg)
 {
 	WindowsTest window;
@@ -266,11 +274,6 @@ void WindowsTest::ProcessTag(std::string text, std::string tag)
 	}
 	else 
 		SendMessageA(m_edit, EM_REPLACESEL, FALSE, (LPARAM)text.c_str()); 
-}
-
-WindowsTest::~WindowsTest()
-{
-	close();
 }
 
 //обработка сообщения. поиск тегов
